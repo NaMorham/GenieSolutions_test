@@ -1,23 +1,35 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(genie_robot)
+PROJECT(genie_robot)
+
+message(STATUS "CMAKE_CACHEFILE_DIR = " ${CMAKE_CACHEFILE_DIR})
+
+include(cmake_vars.log.cmake)
+
+IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    SET(CMAKE_INSTALL_PREFIX ${CMAKE_CACHEFILE_DIR}/dist/ CACHE PATH "default install dir" FORCE)
+ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 SET(CMAKE_USE_RELATIVE_PATHS "ON")
 SET(NO_UNICODE "ON")
 SET(CMAKE_CXX_FLAGS "-std=c++11")
 
-
 SET(CPP_FILES  
-    main.cpp
-    robot.cpp
-    util.cpp
+    src/main.cpp
+    src/robot.cpp
+    src/util.cpp
 )
 
 SET(HDR_FILES  
-    robot.h
-    util.h
+    include/robot.h
+    include/util.h
+)
+
+INCLUDE_DIRECTORIES(
+    include/
 )
 
 ADD_EXECUTABLE( ${PROJECT_NAME} ${CPP_FILES} ${HDR_FILES} )
 
 INSTALL (TARGETS ${PROJECT_NAME} DESTINATION bin )
+
