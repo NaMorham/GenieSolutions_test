@@ -3,7 +3,7 @@
 #include "util.h"
 
 // facing
-typedef enum eFacing
+enum eFacing
 {
     NORTH,
     EAST,

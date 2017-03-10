@@ -1,5 +1,3 @@
-#pragma once
-
 #include "robot.h"
 
 //----------------------------------------------------------------------------
@@ -42,7 +40,9 @@ const int toInt(eFacing facing)
 const eFacing fromInt(const int faceInt)
 {
     if (faceInt >= 0 && faceInt <= 3)
+    {
         return (eFacing)faceInt;
+    }
     else
     {
         std::stringstream ss;
@@ -73,7 +73,9 @@ eCmdResult Robot::runCommand(const std::string& rawCmd)
     int count = tokenise(rawCmd, cmdTokens);
 
     if (count < 1)
+    {
         return eCmdResult::S_OK; // do nothing
+    }
 
     std::string cmd = cmdTokens[0];
     StringVector args(cmdTokens.begin()+1, cmdTokens.end());

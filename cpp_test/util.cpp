@@ -8,6 +8,7 @@ const std::string toUpper(const std::string& str)
     return result;
 }
 
+#if 0
 const StringVector toUpper(const StringVector& strings)
 {
     StringVector result;
@@ -17,6 +18,7 @@ const StringVector toUpper(const StringVector& strings)
     }
     return result;
 }
+#endif
 
 const int tokenise(const std::string& str, StringVector& tokens, char separator /*= ' '*/)
 {
@@ -26,7 +28,7 @@ const int tokenise(const std::string& str, StringVector& tokens, char separator 
     {
         tokens.push_back(tok);
     }
-    return tokens.empty() ? -1 : int(tokens.size());
+    return int(tokens.size());
 }
 
 const char * WHITESPACE = " \t\v\n\f\r\b\a";

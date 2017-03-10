@@ -32,7 +32,7 @@ void runInteractive(Robot& theRobot)
     while (true)
     {
         std::string cmd;
-        std::cout << "> ";
+        std::cout << ": ";
         if (!std::getline(std::cin, cmd))
         {
             // nothing, ignore it and move on
@@ -52,9 +52,10 @@ void runScript(Robot& theRobot, int argc, char *argv[])
     int count = tokenise(argv[2], cmds, ';');
     std::cerr << "! Process [" << count << "] commands." << std::endl;
 
-    for each (std::string cmd in cmds)
+    for (auto itr = cmds.begin(); itr != cmds.end(); ++itr)
     {
-        std::cout << "> " << trim(cmd) << std::endl;
+        std::string cmd = *itr;
+        std::cout << ": " << trim(cmd) << std::endl;
         if (!runCommand(theRobot, cmd))
         {
             break;
@@ -64,7 +65,7 @@ void runScript(Robot& theRobot, int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-    std::cerr << "Generate test field for robot [" << Robot::getMaxX()
+    std::cerr << "! Generate test field for robot [" << Robot::getMaxX()
     	<< ", " << Robot::getMaxY() << "]" << std::endl;
     Robot theRobot;
 
