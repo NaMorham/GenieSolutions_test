@@ -1,4 +1,5 @@
 #include "robot.h"
+#include <iomanip>
 
 //----------------------------------------------------------------------------
 const char *toString(eFacing facing)
@@ -51,24 +52,91 @@ const eFacing fromInt(const int faceInt)
     }
 }
 
+eCmdResult Commandable::executeCommand(const std::string& cmd, const StringVector& args)
+{
+    if (m_cmds.empty())
+        initCommands();
+
+    std::string uCmd(toUpper(cmd));
+
+    // special case
+    if (uCmd == "HELP")
+    {
+        return displayHelp();
+    }
+
+    CommandMap::const_iterator itr = m_cmds.find(uCmd);
+    if (itr != m_cmds.end())
+    {
+        const CommandDetails& details = itr->second;
+        if (args.size() >= details.m_minArgs)
+        {
+            return details.m_pfnCmd(this, args);
+        }
+        else
+        {
+            std::cerr << "Not enough arguments for command [" << cmd << "] -> [" << args.size()
+                << "/" << details.m_minArgs << "]" << std::endl;
+            return eCmdResult::E_INVALID;
+        }
+    }
+    return eCmdResult::E_UNKNOWN;
+}
+
+template<class T>
+const std::string toString(const T& val)
+{
+    std::stringstream ss;
+    ss << val;
+    return ss.str();
+}
+
+eCmdResult Commandable::displayHelp()
+{
+    for (std::pair<std::string, CommandDetails> cmd : m_cmds)
+    {
+        std::cout << std::setw(10) << cmd.first << ": "
+            << (cmd.second.m_minArgs != 0 ? toString(cmd.second.m_minArgs) : "No")
+            << " arguments." << std::endl;
+    }
+    return eCmdResult::S_OK;
+}
+
 //----------------------------------------------------------------------------
 int Robot::ms_id = 0;
 int Robot::ms_xSize = 5;
 int Robot::ms_ySize = 5;
 
 Robot::Robot()
-{
-	m_xPos = -1;
-	m_yPos = -1;
-	m_facing = eFacing::NORTH;
-}
+    : Point(-1, -1), m_facing(eFacing::NORTH), Commandable() {}
+
+Robot::Robot(const int x, const int y, const eFacing facing)
+ : Point(x, y), m_facing(facing), Commandable() {}
 
 Robot::~Robot()
 {
 }
 
+void Robot::initCommands()
+{
+    registerCommand("PLACE", 3, (pfnCmd)(&placeCommand));
+    registerCommand("REPORT", 0, (pfnCmd)(&reportCommand));
+    registerCommand("MOVE", 0, (pfnCmd)(&moveCommand));
+    registerCommand("LEFT", 0, (pfnCmd)(&turnLeftCommand));
+    registerCommand("RIGHT", 0, (pfnCmd)(&turnRightCommand));
+}
+
 eCmdResult Robot::runCommand(const std::string& rawCmd)
 {
+    std::string argString;
+    std::string cmd(toUpper(oneArg(rawCmd, argString)));
+    StringVector args = tokenise(argString);
+    return executeCommand(cmd, args);
+}
+
+eCmdResult oldRunCommand(const std::string& rawCmd)
+{
+    /*
     StringVector cmdTokens;
     int count = tokenise(rawCmd, cmdTokens);
 
@@ -99,7 +167,7 @@ eCmdResult Robot::runCommand(const std::string& rawCmd)
         return turnLeft(args);
     else if (cmd == "RIGHT")
         return turnRight(args);
-    else
+    else*/
 		return eCmdResult::E_UNKNOWN;
 }
 
@@ -149,8 +217,16 @@ eCmdResult Robot::place(const int xPos, const int yPos, const eFacing facing)
 	return eCmdResult::S_OK;
 }
 
+// not placed yet, report it and fail
+#define FAIL_IF_NOT_PLACED() \
+do { if (!isPlaced()) { \
+    std::cerr << "! Robot has not been placed yet." << std::endl; \
+    return eCmdResult::E_FAIL; } \
+} while(0);
+
 eCmdResult Robot::report(const StringVector& args)
 {
+    FAIL_IF_NOT_PLACED();
     if (args.size() != 0)
     {
         std::cerr << "! Report command does not take arguments." << std::endl;
@@ -162,6 +238,7 @@ eCmdResult Robot::report(const StringVector& args)
 
 eCmdResult Robot::move(const StringVector& args)
 {
+    FAIL_IF_NOT_PLACED();
     if (args.size() != 0)
     {
         std::cerr << "! Move command does not take arguments." << std::endl;
@@ -196,6 +273,7 @@ eCmdResult Robot::move(const StringVector& args)
 
 eCmdResult Robot::turnLeft(const StringVector& args)
 {
+    FAIL_IF_NOT_PLACED();
     if (args.size() != 0)
     {
         std::cerr << "! Left turn command does not take arguments." << std::endl;
@@ -212,6 +290,7 @@ eCmdResult Robot::turnLeft(const StringVector& args)
 
 eCmdResult Robot::turnRight(const StringVector& args)
 {
+    FAIL_IF_NOT_PLACED();
     if (args.size() != 0)
     {
         std::cerr << "! Right turn command does not take arguments." << std::endl;

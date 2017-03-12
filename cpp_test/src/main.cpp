@@ -63,91 +63,7 @@ void runScript(Robot& theRobot, int argc, char *argv[])
     }
 }
 
-class Foom
-{
-public:
-    Foom(StringVector& args) : m_args(args) {}
-
-    void testRun()
-    {
-        std::cout << "Foom::testRun(args[" << m_args.size() << "])" << std::endl;
-    }
-
-private:
-    StringVector m_args;
-};
-
-typedef int(*foom)(Foom *);
-
-int foomTest(Foom *pFoom)
-{
-    pFoom->testRun();
-    return 0;
-}
-
-class Woot
-{
-public:
-    Woot(foom fmm) { m_foom = fmm; }
-
-    int doIt(Foom *pFoom) { return m_foom(pFoom); }
-
-    foom m_foom;
-};
-
-#include <map>
-
-class Commandable
-{
-public:
-    typedef eCmdResult(*pfnCmd)(Commandable*, const StringVector&);
-
-    Commandable() {}
-    virtual ~Commandable() {}
-
-    virtual void initCommands() = 0;
-
-    void registerCommand(const std::string& cmd, pfnCmd fCmd)
-    {
-        m_cmds[toUpper(cmd)] = fCmd;
-    }
-
-    eCmdResult runCommand(const std::string& cmd, const StringVector& args)
-    {
-        if (m_cmds.empty())
-            initCommands();
-
-        std::map<std::string, pfnCmd>::const_iterator itr = m_cmds.find(toUpper(cmd));
-        if (itr != m_cmds.end())
-        {
-            return itr->second(this, args);
-        }
-        else
-        {
-            return eCmdResult::E_UNKNOWN;
-        }
-    }
-
-private:
-    std::map<std::string, pfnCmd> m_cmds;
-};
-
-class Point
-{
-public:
-    Point() : Point(0, 0) {}
-    Point(int x, int y) : m_xPos(x), m_yPos(y) {}
-
-    int& x() { return m_xPos; }
-    const int& x() const { return m_xPos; }
-
-    int& y() { return m_yPos; }
-    const int& y() const { return m_yPos; }
-
-private:
-    int m_xPos, m_yPos;
-};
-
+/*
 class Turtle : public Commandable, Point
 {
 public:
@@ -171,33 +87,41 @@ public:
 
     virtual void initCommands()
     {
-        registerCommand("TEST", (pfnCmd)(&testCommand));
+        registerCommand("TEST", 1, (pfnCmd)(&testCommand));
     }
 
 private:
     eFacing m_facing;
 };
 
+void testOneArg(std::string test)
+{
+    std::cerr << "Test oneArg(" << test << ")" << std::endl;
+    do
+    {
+        std::cerr << "OneArg: [" << oneArg(test, test) << "], remainder [" << test << "]" << std::endl;
+    } while (!test.empty());
+}
+
+void testOneArg()
+{
+    std::string test1("This is a crazy long string.  With some      stupid\tspaces");
+    std::string test2("");
+    std::string test3("only_one_arg_here");
+    std::string test4("     only_one_arg_here\t");
+    testOneArg(test1);
+    testOneArg(test2);
+    testOneArg(test3);
+    testOneArg(test4);
+}
+ */
+
 int main(int argc, char *argv[])
 {
-    //*
-    StringVector testArgs;
-    testArgs.push_back("TEST");
-    testArgs.push_back("42");
-    testArgs.push_back("woooot?");
+    /*
+    testOneArg();
+     */
 
-    Foom dummy(testArgs);
-
-    foomTest(&dummy);
-
-    Woot wt(foomTest);
-    wt.doIt(&dummy);
-
-    testArgs.push_back("naaaah");
-
-    Turtle ttl;
-    ttl.runCommand("test", testArgs);
-    /*/
     std::cerr << "! Generate test field for robot [" << Robot::getMaxX()
     	<< ", " << Robot::getMaxY() << "]" << std::endl;
     Robot theRobot;
@@ -219,7 +143,6 @@ int main(int argc, char *argv[])
         std::cerr << "! Invalid command line arg" << std::endl;
         return 1;
     }
-    //*/
 
     return 0;
 }
