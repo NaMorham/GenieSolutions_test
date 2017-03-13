@@ -42,11 +42,15 @@ public:
     class CommandDetails
     {
     public:
-        CommandDetails() : m_minArgs(0), m_pfnCmd(nullptr) {}
-        CommandDetails(size_t minArgs, pfnCmd pfnCmd) : m_minArgs(minArgs), m_pfnCmd(pfnCmd) {}
-        CommandDetails(const CommandDetails& orig) : m_minArgs(orig.m_minArgs), m_pfnCmd(orig.m_pfnCmd) {}
+        CommandDetails()
+            : m_minArgs(0), m_pfnCmd(nullptr), m_helpText("") {}
+        CommandDetails(size_t minArgs, pfnCmd pfnCmd, const std::string& helpText = "")
+            : m_minArgs(minArgs), m_pfnCmd(pfnCmd), m_helpText(helpText) {}
+        CommandDetails(const CommandDetails& orig)
+            : m_minArgs(orig.m_minArgs), m_pfnCmd(orig.m_pfnCmd), m_helpText(orig.m_helpText) {}
         size_t m_minArgs;
         pfnCmd m_pfnCmd;
+        std::string m_helpText;
     };
     typedef std::map<std::string, CommandDetails> CommandMap;
 
