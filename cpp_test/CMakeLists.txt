@@ -14,7 +14,7 @@ endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 #message(STATUS "DBG: CMAKE_INSTALL_PREFIX = " ${CMAKE_INSTALL_PREFIX})
 
-include(cmake_vars.log.cmake)
+#include(cmake_vars.log.cmake)
 
 set(CMAKE_USE_RELATIVE_PATHS "ON")
 set(NO_UNICODE "ON")
