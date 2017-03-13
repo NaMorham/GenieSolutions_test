@@ -52,7 +52,11 @@ install(TARGETS ${PROJECT_NAME} DESTINATION bin )
 # -------------------------------------------------------
 enable_testing()
 find_package(Threads REQUIRED)
-find_package(GTest REQUIRED)
+if(MSVC)
+    find_package(GTest REQUIRED HINT "C:\\Program Files (x86)\\googletest-distribution")
+else()
+    find_package(GTest REQUIRED)
+endif()
 
 # -------------------------------------------------------
 # Googletest projects

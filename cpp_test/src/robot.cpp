@@ -108,10 +108,10 @@ int Robot::ms_xSize = 5;
 int Robot::ms_ySize = 5;
 
 Robot::Robot()
-    : Point(-1, -1), m_facing(eFacing::NORTH), Commandable() {}
+ : Robot(-1, -1, eFacing::NORTH) {}
 
 Robot::Robot(const int x, const int y, const eFacing facing)
- : Point(x, y), m_facing(facing), Commandable() {}
+ : Point(x, y), Commandable(), m_facing(facing) {}
 
 Robot::~Robot()
 {
@@ -200,7 +200,7 @@ eCmdResult Robot::place(const StringVector& args)
 	}
 	catch (std::exception &e)
 	{
-		std::cerr << "! Could not interpret place command." << std::endl;
+		std::cerr << "! Could not interpret place command [" << e.what() << "]." << std::endl;
 		return eCmdResult::E_FAIL;
 	}
 }

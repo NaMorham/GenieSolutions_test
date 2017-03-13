@@ -8,6 +8,17 @@ const std::string toUpper(const std::string& str)
     return result;
 }
 
+const StringVector& makeStringVector(StringVector& outVector, std::initializer_list<std::string> iList)
+{
+	outVector.clear();//resize(iList.size());
+	for(std::string elem : iList)
+    {
+		std::cerr << "elem = [" << elem << "]" << std::endl;
+        outVector.push_back(elem);
+    }
+	return outVector;
+}
+
 const int tokenise(const std::string& str, StringVector& tokens, char separator /*= ' '*/)
 {
     std::stringstream ss(str);
